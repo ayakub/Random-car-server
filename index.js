@@ -66,11 +66,11 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/usersAll/buyer', async (req, res) => {
-            const query = { role: "buyer" };
-            const result = await userCollection.find(query).toArray();
-            res.send(result);
-        })
+        // app.get('/usersAll/buyer', async (req, res) => {
+        //     const query = { role: "buyer" };
+        //     const result = await userCollection.find(query).toArray();
+        //     res.send(result);
+        // })
 
 
         app.get('/booking', async (req, res) => {
