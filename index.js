@@ -53,6 +53,28 @@ async function run() {
             console.log(result);
             res.send(result)
         })
+        //role admin
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await userCollection.findOne(query);
+            res.send({ isAdmin: user?.role === 'admin' });
+        })
+        // role seller
+
+        app.get('/users/seller/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await userCollection.findOne(query);
+            res.send({ isAdmin: user?.role === 'seller' });
+        })
+        //role buyer
+        app.get('/users/buyer/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await userCollection.findOne(query);
+            res.send({ isAdmin: user?.role === 'buyer' });
+        })
 
         app.get('/usersAll', async (req, res) => {
             const query = {};
@@ -75,20 +97,24 @@ async function run() {
 
         app.get('/booking', async (req, res) => {
             let query = { email: req.query.email };
-            // if (req.query.email) {
-            //     query = {
-            //         email: req.query.email
-            //     }
-            // }
             const result = await BookingCollection.find(query).toArray();
             res.send(result);
         })
+
+        app.get('/addproduct', async (req, res) => {
+            let query = { email: req.query.email };
+            const result = await catagoriesCollection.find(query).toArray();
+            res.send(result);
+        })
+
+
 
         app.get('/catagoryname', async (req, res) => {
             const query = {};
             const result = await catagoriesNameCollection.find(query).toArray();
             res.send(result)
         })
+
         app.get('/catagoriesItem/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
@@ -103,10 +129,19 @@ async function run() {
             console.log(result);
         })
 
+
+        //delete seller
         app.delete('/usersAll/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await userCollection.deleteOne(query);
+            res.send(result)
+        })
+
+        app.delete('/myprosuct/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await catagoriesCollection.deleteOne(query);
             res.send(result)
         })
 
