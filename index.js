@@ -53,6 +53,13 @@ async function run() {
             console.log(result);
             res.send(result)
         })
+        // role seller
+        app.get('/users/seller/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await userCollection.findOne(query);
+            res.send({ isSeller: user?.role === 'seller' });
+        })
         //role admin
         app.get('/users/admin/:email', async (req, res) => {
             const email = req.params.email;
@@ -60,20 +67,14 @@ async function run() {
             const user = await userCollection.findOne(query);
             res.send({ isAdmin: user?.role === 'admin' });
         })
-        // role seller
 
-        app.get('/users/seller/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { email }
-            const user = await userCollection.findOne(query);
-            res.send({ isAdmin: user?.role === 'seller' });
-        })
+
         //role buyer
         app.get('/users/buyer/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email }
             const user = await userCollection.findOne(query);
-            res.send({ isAdmin: user?.role === 'buyer' });
+            res.send({ isBuyer: user?.role === 'buyer' });
         })
 
         app.get('/usersAll', async (req, res) => {
@@ -129,6 +130,12 @@ async function run() {
             console.log(result);
         })
 
+        app.get('/advertiseing', async (req, res) => {
+            const query = { advertise: req.query.advertise }
+            const result = await catagoriesCollection.find(query).toArray()
+            res.send(result)
+        })
+
 
         //delete seller
         app.delete('/usersAll/:id', async (req, res) => {
@@ -159,6 +166,19 @@ async function run() {
             res.send(result)
 
 
+        })
+        app.put('/advertiesment', (req, res) => {
+            const id = req.query.id;
+            console.log(id);
+            const query = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    advertise: "true"
+                }
+            }
+            const result = catagoriesCollection.updateOne(query, updateDoc, options)
+            res.send(result)
         })
 
 
