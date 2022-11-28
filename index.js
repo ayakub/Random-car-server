@@ -20,6 +20,25 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@sic
 console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+function verifyJWT(req, res, next) {
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).send('unauthorized access');
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
+            return res.status(403).send({ message: 'forbidden access' })
+        }
+        req.decoded = decoded;
+        next();
+    })
+
+}
+
 async function run() {
     try {
         const catagoriesNameCollection = client.db('reusedCar').collection('catagoriesName');
@@ -27,6 +46,16 @@ async function run() {
         const BookingCollection = client.db('reusedCar').collection('booked');
         const userCollection = client.db('reusedCar').collection('users');
 
+        const verifyAdmin = async (req, res, next) => {
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const user = await usersCollection.findOne(query);
+
+            if (user?.role !== 'admin') {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
+            next();
+        }
 
 
         app.post('/catagory', async (req, res) => {
@@ -81,6 +110,14 @@ async function run() {
             const query = {};
             const result = await userCollection.find(query).toArray();
             res.send(result);
+        })
+
+        app.get('/verifyuser', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const result = await userCollection.findOne(query);
+            res.send(result)
+            console.log(result);
         })
 
         app.get('/usersAll/seller', async (req, res) => {
