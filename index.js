@@ -181,6 +181,20 @@ async function run() {
             res.send(result)
         })
 
+        app.put('/verify', (req, res) => {
+            const id = req.query.id;
+            console.log(id);
+            const query = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    verify: "verified"
+                }
+            }
+            const result = userCollection.updateOne(query, updateDoc, options)
+            res.send(result)
+        })
+
 
     }
     finally {
